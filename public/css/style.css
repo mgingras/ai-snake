@@ -1,0 +1,51 @@
+html, body {
+  width:100%;
+  height:100%;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+html{
+  padding:15px;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.board {
+  width: 100%;
+  height: 100%;
+  /* background-color: red; */
+}
+
+.block {
+  width: 5%;
+  float: left;
+  height: 5%;
+  border: 1px solid black;
+}
+
+.border {
+  background-color: #929292;
+}
+
+.food {
+  background-color: #FF2B1A;
+}
+
+.wall {
+  background-color: #92520F;
+}
+.empty {
+  background-color: #fff;
+}
+
+.snake.head {
+  background-color: #00F72B;
+}
+.snake.body {
+  background-color: #7D5AFB;
+}
+
+.snake.tail{
+  background-color: #071F90;
+}

@@ -1,0 +1,15 @@
+.board
+  each row in board
+    each block in row
+      if block.type === 'wall'
+        .block.wall
+      else if block.type === 'empty'
+        .block.empty
+      else if block.type === 'head'
+        .block.snake.head
+      else if block.type === 'body'
+        .block.snake.body
+      else if block.type === 'tail'
+        .block.snake.tail
+      else if block.type === 'food'
+        .block.food
