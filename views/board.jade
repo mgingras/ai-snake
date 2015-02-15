@@ -1,15 +1,23 @@
 .board
-  each row in board
-    each block in row
+  each row, y in board
+    each block, x in row
+      -block = board[x][y]
+      
       if block.type === 'wall'
-        .block.wall
+        .block.wall(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
+          //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)
       else if block.type === 'empty'
-        .block.empty
+        .block.empty(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
+          //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)
       else if block.type === 'head'
-        .block.snake.head
+        .block.snake.head(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
+          //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)
       else if block.type === 'body'
-        .block.snake.body
+        .block.snake.body(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
+          //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)
       else if block.type === 'tail'
-        .block.snake.tail
+        .block.snake.tail(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
+          //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)
       else if block.type === 'food'
-        .block.food
+        .block.food(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
+          //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)

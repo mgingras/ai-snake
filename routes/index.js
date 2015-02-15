@@ -1,7 +1,9 @@
 var express = require('express'),
           _ = require('lodash'),
-      Board = require('../lib/board.js');
-var router = express.Router();
+      Board = require('../lib/board.js'),
+      jade  = require('jade');
+     router = express.Router(),
+     path = require('path');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -11,10 +13,12 @@ router.get('/', function(req, res, next) {
 /* GET new game */
 var board;
 router.get('/newGame', function(req, res, next) {
-  console.log('before board');
+  // console.log('before board');
   board = new Board(); // Create a new board
-  console.log('after board');
-  res.render('board', {board: board.board});
+  // console.log('after board');
+  
+  var htmlBoard = jade.renderFile(path.join(__dirname, '../views') + '/board.jade', {board: board.board});
+  res.send({board: board.board, html: htmlBoard});
 });
 
 router.post('/move', function(req, res, next) {
@@ -24,7 +28,8 @@ router.post('/move', function(req, res, next) {
     res.send('gameOver');
     return;
   }
-  res.render('board', {board: board.board});
+  var htmlBoard = jade.renderFile(path.join(__dirname, '../views') + '/board.jade', {board: board.board});
+  res.send({board: board.board, html: htmlBoard});
 });
 
 module.exports = router;

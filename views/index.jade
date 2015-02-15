@@ -4,10 +4,29 @@ block contents
   .center(style='width:100%;text-align:center;')
       h1 Hello
       p.lead Welcome to #{title}
-      p By Martin Gingras
-      //- .playType
-      //-   label
-      //-     input(type="radio" name="interactive" id="interactive" value="interactive")
-      //-     | Interactive
+      p 
+        em By Martin Gingras
+      br
+      .playType(style='width:200px;left:50%;margin-left:-100px;text-align:left;position:relative;')
+        .radio
+          label
+            input(type="radio" name="algorithmRadios" id="interactive" value="interactive" checked)
+            | &nbsp;Interactive
+          br
+        .radio
+          label
+            input(type="radio" name="algorithmRadios" id="BFS" value="BFS")
+            | &nbsp;Breadth First Search
+          br
+        .radio
+          label
+            input(type="radio" name="algorithmRadios" id="DFS" value="DFS")
+            | &nbsp;Deapth First Search
+          br
+        .radio
+          label
+            input(type="radio" name="algorithmRadios" id="a*" value="a*")
+            | &nbsp;A* Search
+        br
       p
         em Press the spacebar to start
