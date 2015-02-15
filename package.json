@@ -2,6 +2,9 @@
   "name": "AIa1",
   "version": "0.0.0",
   "private": true,
+  "engines" : {
+    "node" : ">=0.10.3 <=0.12"
+  },
   "scripts": {
     "start": "node ./bin/www"
   },

@@ -1,6 +1,6 @@
 var express = require('express'),
           _ = require('lodash'),
-      Board = require('../lib/Board');
+      Board = require('../lib/board.js');
 var router = express.Router();
 
 /* GET home page. */
