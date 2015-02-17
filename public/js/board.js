@@ -73,7 +73,7 @@ Board.prototype.update = function() {
   this._placeBoard();
   this._placeSnake();
   this._placeFood();
-}
+};
 
 Board.prototype._detectCollision = function() {
   var headX = this.snake.head().pos.x;
@@ -94,7 +94,8 @@ Board.prototype._detectCollision = function() {
     return true;
   }
   return false;
-}
+};
+
 Board.prototype._detectFood = function() {
   if(!this.food){
     return false;
@@ -109,4 +110,4 @@ Board.prototype._detectFood = function() {
     return true;
   }
   return false;
-}
+};
