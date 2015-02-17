@@ -45,4 +45,13 @@ router.post('/move', function(req, res, next) {
   });
 });
 
+router.post('/renderBoard', function(req,res,next) {
+  if(!req.body.board){
+    res.send({error: 'No Board'});
+  }
+  var boardToRender = req.body.board;
+  console.dir(req.body);
+  res.render('board', boardToRender);
+});
+
 module.exports = router;

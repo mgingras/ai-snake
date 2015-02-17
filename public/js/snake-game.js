@@ -21,18 +21,17 @@ function newGame() {
     clearInterval(moving);
     moving = undefined;
   }
-  $.get('/newGame', function(newBoard) {
-    $('body').html(newBoard.html);
-    head = newBoard.head;
-    board = newBoard.board;
-    food = newBoard.food;
-    registerHandlers();
-    if(gameType === 'DFS'){
-      doDFS();
-    } else if(gameType === 'BFS'){
-      doBFS();
-    }
-  });
+  var newBoard = newSnakeGame();
+  $('body').html(newBoard.html);
+  head = newBoard.head;
+  board = newBoard.board;
+  food = newBoard.food;
+  registerHandlers();
+  if(gameType === 'DFS'){
+    doDFS();
+  } else if(gameType === 'BFS'){
+    doBFS();
+  }
 }
 
 function registerHandlers() {
@@ -91,16 +90,15 @@ function startMoving() {
         }
       }
     }
-    $.post('/move', {direction: direction}, function(updatedBoard) {
-      if(updatedBoard === 'gameOver'){
-        newGame()
-        alert('Game Over');
-      }
-      head = updatedBoard.head;
-      food = updatedBoard.food;
-      board = updatedBoard.board;
-      $('body').html(updatedBoard.html);
-    });
+    var updatedBoard = moveSnake(direction);
+    if(updatedBoard === 'gameOver'){
+      newGame()
+      alert('Game Over');
+    }
+    head = updatedBoard.head;
+    food = updatedBoard.food;
+    board = updatedBoard.board;
+    $('body').html(updatedBoard.html);
   }, 50);
 }
 
