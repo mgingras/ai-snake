@@ -124,9 +124,8 @@ function BFS (node) {
   var found = false;
   while(!found){
     // If it is a searchable node
-    node = board[node.pos.x][node.pos.y];
     if(node.type !== 'wall' && node.type !== 'body' &&
-       node.type !== 'tail' && !node.visited){
+       node.type !== 'tail' && !board[node.pos.x][node.pos.y].visited){
       
       // console.log('%s x: %d y: %d %s', node.type, node.pos.x, node.pos.y, node.visited);
       if(node.path){
