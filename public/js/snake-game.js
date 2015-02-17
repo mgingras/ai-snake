@@ -3,7 +3,9 @@ var direction = 'NONE',
   gameType = 'interactive',
   board;
 var visited = []; // Nodes visited by the algorithm
-var route;        // Route for snake to take.
+var route;        // Route for snake to take
+var head;         // Head of the snake
+var food;         // Where the food is
   
 $(function() {
   $(document).on('keydown', function(e) {
@@ -21,8 +23,15 @@ function newGame() {
   }
   $.get('/newGame', function(newBoard) {
     $('body').html(newBoard.html);
+    head = newBoard.head;
     board = newBoard.board;
+    food = newBoard.food;
     registerHandlers();
+    if(gameType === 'DFS'){
+      doDFS();
+    } else if(gameType === 'BFS'){
+      doBFS();
+    }
   });
 }
 
@@ -60,7 +69,7 @@ function registerHandlers() {
       }
     }
     if(e.keyCode === 27){
-      newGame();
+      location.reload();
     }
   });
 }
@@ -68,14 +77,18 @@ function registerHandlers() {
 function startMoving() {
   moving = setInterval(function() {
     // console.log('Move: ' + direction);
-    if(gameType === 'DFS'){
+    if(gameType !== 'interactive'){
       if(route.length > 0){
         direction = route.pop().dir;
       }
       else {
         clearInterval(moving);
         clearBoard();
-        doDFS();
+        if(gameType === 'DFS'){
+          return doDFS()
+        }else if(gameType === 'BFS'){
+          return doBFS();
+        }
       }
     }
     $.post('/move', {direction: direction}, function(updatedBoard) {
@@ -83,6 +96,8 @@ function startMoving() {
         newGame()
         alert('Game Over');
       }
+      head = updatedBoard.head;
+      food = updatedBoard.food;
       board = updatedBoard.board;
       $('body').html(updatedBoard.html);
     });
@@ -90,6 +105,9 @@ function startMoving() {
 }
 
 function getHead(){
+  if(head){
+    return head;
+  }
   for (var x = 0; x < board.length; x++) {
     for (var y = 0; y < board.length; y++) {
       if(board[x][y].type === 'head'){
@@ -100,80 +118,105 @@ function getHead(){
   }
 }
 
+// BFS CODE
+function BFS (node) {
+  var queue = [];
+  var found = false;
+  while(!found){
+    // If it is a searchable node
+    node = board[node.pos.x][node.pos.y];
+    if(node.type !== 'wall' && node.type !== 'body' &&
+       node.type !== 'tail' && !node.visited){
+      
+      // console.log('%s x: %d y: %d %s', node.type, node.pos.x, node.pos.y, node.visited);
+      if(node.path){
+        node.path.push(node);
+      } else{
+        node.path = [];
+      }
+      
+      if(node.type === 'food'){
+        return node.path;
+      }
+      
+      queue = queue.concat([
+        _.merge(board[node.pos.x][node.pos.y - 1], {path: node.path, dir: 'UP'}),
+        _.merge(board[node.pos.x][node.pos.y + 1], {path: node.path, dir: 'DOWN'}),
+        _.merge(board[node.pos.x - 1][node.pos.y], {path: node.path, dir: 'LEFT'}),
+        _.merge(board[node.pos.x + 1][node.pos.y], {path: node.path, dir: 'RIGHT'})
+      ]);
+    }
+    board[node.pos.x][node.pos.y].visited = true; // Visited this node
+    if(queue.length > 0){
+      node = queue.shift();
+    } else{
+      return false;
+    }
+  }
+}
+function doBFS () {
+  route = BFS(getHead());
+  route.reverse();
+  drawRoute(route);
+  setTimeout(function() {
+    startMoving();
+  }, 2000);
+}
+
+// DFS CODE
 function DFS(node, queue){
   if(!queue){
     queue = [];
   }
-  
   if(node.visited){
     return false;
   }
-
-  node.visited = true;
+  board[node.pos.x][node.pos.y].visited = true;
   if(node.type === 'wall' || node.type === 'body' || node.type === 'tail'){
     return false;
   } else if(node.type === 'food'){
-    console.log("FOOD");
+    // console.log("FOOD");
     return true;
   }
-  console.log('x: %d y: %d', node.pos.x, node.pos.y);
-  if(node.type !== 'head'){
+  // console.log('x: %d y: %d', node.pos.x, node.pos.y);
     visited.push({
       pos: node.pos
     });
-  }
   if(DFS(board[node.pos.x][node.pos.y - 1], queue)){
-    console.log("UP");
     // UP
-    if(node.type !== 'head'){
       queue.push({
         pos: node.pos,
         dir: 'UP'
       });
-    }
-    // queue.push('UP');
     return queue;
-  }  else if(DFS(board[node.pos.x - 1][node.pos.y], queue)){
-    console.log("LEFT");
-    // LEFT
-    if(node.type !== 'head'){
-      queue.push({
-        pos: node.pos,
-        dir: 'LEFT'
-      });
-    }
-    // queue.push('LEFT');
-    return queue;
-  } else if(DFS(board[node.pos.x + 1][node.pos.y], queue)){
+  }  else if(DFS(board[node.pos.x + 1][node.pos.y], queue)){
     // RIGHT
-    console.log("RIGHT");
-    if(node.type !== 'head'){
       queue.push({
         pos: node.pos,
         dir: 'RIGHT'
       });
-    }
-    // queue.push('RIGHT');
     return queue;
-  } else if(DFS(board[node.pos.x][node.pos.y + 1], queue)){
-    console.log("DOWN");
+  }  else if(DFS(board[node.pos.x][node.pos.y + 1], queue)){
     // DOWN
-    if(node.type !== 'head'){
       queue.push({
         pos: node.pos,
         dir: 'DOWN'
       });
-    }
-    // queue.push('DOWN');
+    return queue;
+  } else if(DFS(board[node.pos.x - 1][node.pos.y], queue)){
+    // LEFT
+      queue.push({
+        pos: node.pos,
+        dir: 'LEFT'
+      });
     return queue;
   }
-  console.dir(node.pos);
   
 }
 
 function doDFS(){
   route = DFS(getHead());
-  drawRoute(route);
+  drawRoute();
   setTimeout(function() {
     startMoving();
   }, 2000);
@@ -182,15 +225,24 @@ function drawVisited(){
   drawRoute(visited.reverse());
 }
 
-function drawRoute (route) {
+function drawRoute () {
+  var len = route.length;
+  var offset = (gameType === 'DFS') ? -1 : 0;
   for(var block in route){
+    if(block == len - 1 && gameType === 'DFS'){
+      return;
+    }
+    if(block == 0 && gameType === 'BFS'){
+      continue;
+    }
     $('.' + route[block].pos.x +'-'+ route[block].pos.y).css('background-color', 'orange');
-    $('.' + route[block].pos.x +'-'+ route[block].pos.y).html(route.length - block);
+    $('.' + route[block].pos.x +'-'+ route[block].pos.y).html(route.length - block + offset);
   }
 }
 function clearBoard(){
   for (var x = 0; x < board.length; x++) {
     for (var y = 0; y < board.length; y++) {
+      board[x][y].path = undefined;
       board[x][y].visited = false;
     }
   }

@@ -2,7 +2,6 @@
   each row, y in board
     each block, x in row
       -block = board[x][y]
-      
       if block.type === 'wall'
         .block.wall(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
           //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)
