@@ -1,5 +1,5 @@
 {
-  "name": "Search Snake",
+  "name": "Search-Snake",
   "version": "1.0.0",
   "description": "Traditional Snake game with some search algorithms implemented on top",
   "engines": {
