@@ -4,6 +4,7 @@ function Snake(board) {
   var headX = Math.floor(Math.random() * (board.width - 2 - length)) + 1;
   var headY = Math.floor(Math.random() * (board.height - 2)) + 1;
   var body = [];
+  this.direction = 'LEFT';
   
   for (var i = 0; i < length; i++) {
     if(i === 0){
