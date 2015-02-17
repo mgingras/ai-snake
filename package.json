@@ -1,21 +1,15 @@
 {
-  "name": "AIa1",
-  "version": "0.0.0",
-  "private": true,
-  "engines" : {
-    "node" : "0.12"
+  "name": "Search Snake",
+  "version": "1.0.0",
+  "description": "Traditional Snake game with some search algorithms implemented on top",
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.2.x"
   },
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node server.js"
   },
   "dependencies": {
-    "body-parser": "~1.10.2",
-    "cookie-parser": "~1.3.3",
-    "debug": "~2.1.1",
-    "express": "~4.11.1",
-    "jade": "~1.9.1",
-    "lodash": "^3.2.0",
-    "morgan": "~1.5.1",
-    "serve-favicon": "~2.2.0"
+    "harp": "^0.14.0"
   }
 }
