@@ -2,7 +2,7 @@ var direction = 'NONE',
   moving,
   gameType = 'interactive',
   board;
-var visited = []; // Nodes visited by the algorithm
+
 var route;        // Route for snake to take
 var head;         // Head of the snake
 var food;         // Where the food is
@@ -124,7 +124,6 @@ function BFS (node) {
     // If it is a searchable node
     if(node.type !== 'wall' && node.type !== 'body' &&
        node.type !== 'tail' && !board[node.pos.x][node.pos.y].visited){
-      
       // console.log('%s x: %d y: %d %s', node.type, node.pos.x, node.pos.y, node.visited);
       if(node.path){
         node.path.push(node);
@@ -154,7 +153,7 @@ function BFS (node) {
 function doBFS () {
   route = BFS(getHead());
   route.reverse();
-  drawRoute(route);
+  drawRoute();
   setTimeout(function() {
     startMoving();
   }, 2000);
@@ -176,9 +175,6 @@ function DFS(node, queue){
     return true;
   }
   // console.log('x: %d y: %d', node.pos.x, node.pos.y);
-    visited.push({
-      pos: node.pos
-    });
   if(DFS(board[node.pos.x][node.pos.y - 1], queue)){
     // UP
       queue.push({
@@ -236,6 +232,7 @@ function drawRoute () {
     $('.' + route[block].pos.x +'-'+ route[block].pos.y).html(route.length - block + offset);
   }
 }
+
 function clearBoard(){
   for (var x = 0; x < board.length; x++) {
     for (var y = 0; y < board.length; y++) {

@@ -7,6 +7,8 @@
       if block.type === 'wall'
         .block.wall(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
           //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)
+      else if block.type === 'border'
+        .block.border(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
       else if block.type === 'empty'
         .block.empty(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
           //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)
