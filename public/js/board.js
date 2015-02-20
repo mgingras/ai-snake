@@ -5,9 +5,17 @@ function Board() {
   this._placeBoard();
   this.snake = new Snake(this);
   this._placeSnake();
+  this._placeWalls(10);
   this._placeFood();
   
 }
+
+Board.prototype.update = function() {
+  this._placeBoard();
+  this._placeSnake();
+  this._placeWalls();
+  this._placeFood();
+};
 
 // Place walls and empty slots
 Board.prototype._placeBoard = function() {
@@ -17,7 +25,7 @@ Board.prototype._placeBoard = function() {
     for (var y = 0; y < this.height; y++) {
       if(x === 0 || y === 0 || x === this.width - 1 || y === this.height - 1){
         board[x][y] = {
-          type: 'wall'
+          type: 'border'
         };
       } else {
         board[x][y] = {
@@ -69,11 +77,37 @@ Board.prototype._placeFood = function() {
   };
 };
 
-Board.prototype.update = function() {
-  this._placeBoard();
-  this._placeSnake();
-  this._placeFood();
+Board.prototype._placeWalls = function(numberOfWalls) {
+  if(!this.walls){
+    this.walls = [];
+    var wallX = 0, wallY = 0;
+    var positionWalls = function() {
+      wallX = Math.floor(Math.random() * (this.width - 2)) + 1;
+      wallY = Math.floor(Math.random() * (this.height - 2)) + 1;
+    }.bind(this);
+    while(numberOfWalls > 0){
+      while(this.board[wallX][wallY].type !== 'empty'){
+        positionWalls();
+      }
+      this.board[wallX][wallY].type = 'wall';
+      this.walls.push({
+        type: 'wall',
+        pos: {
+          x: wallX,
+          y: wallY
+        }
+      });
+      numberOfWalls--;
+    }
+  }
+  var wall;
+  for (var i = 0; i < this.walls.length; i++) {
+    wall = this.walls[i]
+    this.board[wall.pos.x][wall.pos.y] = wall;
+  }
 };
+
+
 
 Board.prototype._detectCollision = function() {
   var headX = this.snake.head().pos.x;
@@ -81,14 +115,28 @@ Board.prototype._detectCollision = function() {
   var collision = false;
   // console.log(headX);
   // console.log(headY);
+
+  // Hits wall
   if(headX <= 0 || headX >= this.width - 1 || headY <= 0 || headY >= this.height - 1) {
     collision = true;
   }
+  // Hits self
   for (var i = 1; i < this.snake.body.length; i++) {
     if(this.snake.body[i].pos.x == headX && this.snake.body[i].pos.y == headY){
       collision = true;
     }
   }
+  if(this.walls){
+  // Hits wall
+    var wall;
+    for (var j = 0; j < this.walls.length; j++) {
+      wall = this.walls[j];
+      if(wall.pos.x === headX && wall.pos.y === headY){
+        collision = true;
+      }
+    }
+  }
+  
   if(collision){
     this.gameOver = true;
     return true;
@@ -106,7 +154,6 @@ Board.prototype._detectFood = function() {
   // console.log('f: x: %d y: %d', this.food.x, this.food.y);
   if(headX === this.food.x && headY === this.food.y){
     this.food = undefined;
-    console.log('foood');
     return true;
   }
   return false;

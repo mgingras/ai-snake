@@ -31,6 +31,8 @@ function newGame() {
     doDFS();
   } else if(gameType === 'BFS'){
     doBFS();
+  } else if(gameType === 'aStar'){
+    doAStar();
   }
 }
 
@@ -38,15 +40,15 @@ function registerHandlers() {
   $(document).off('keydown').on('keydown', function(e) {
     if(gameType === 'interactive'){
       if(e.keyCode === 37){
-        // Left
-        console.log('Left');
+        // LEFT
+        console.log('LEFT');
         direction = 'LEFT';
         if(!moving){
           startMoving();
         }
       } else if(e.keyCode === 39){
-        // Right
-        console.log('Right');
+        // RIGHT
+        console.log('RIGHT');
         direction = 'RIGHT';
         if(!moving){
           startMoving();
@@ -59,7 +61,7 @@ function registerHandlers() {
           startMoving();
         }
       } else if(e.keyCode === 40){
-        // Down
+        // DOWN
         console.log('DOWN');
         direction = 'DOWN';
         if(!moving){
@@ -77,22 +79,25 @@ function startMoving() {
   moving = setInterval(function() {
     // console.log('Move: ' + direction);
     if(gameType !== 'interactive'){
-      if(route.length > 0){
+      if(route && route.length > 0){
         direction = route.pop().dir;
       }
       else {
         clearInterval(moving);
         clearBoard();
+        // newGame();
         if(gameType === 'DFS'){
-          return doDFS()
-        }else if(gameType === 'BFS'){
+          return doDFS();
+        } else if(gameType === 'BFS'){
           return doBFS();
+        } else if(gameType === 'aStar'){
+          return doAStar();
         }
       }
     }
     var updatedBoard = moveSnake(direction);
     if(updatedBoard === 'gameOver'){
-      newGame()
+      newGame();
       alert('Game Over');
     }
     head = updatedBoard.head;
@@ -123,7 +128,7 @@ function BFS (node) {
   while(!found){
     // If it is a searchable node
     if(node.type !== 'wall' && node.type !== 'body' &&
-       node.type !== 'tail' && !board[node.pos.x][node.pos.y].visited){
+       node.type !== 'tail' && node.type !== 'border' && !board[node.pos.x][node.pos.y].visited){
       // console.log('%s x: %d y: %d %s', node.type, node.pos.x, node.pos.y, node.visited);
       if(node.path){
         node.path.push(node);
@@ -152,8 +157,12 @@ function BFS (node) {
 }
 function doBFS () {
   route = BFS(getHead());
-  route.reverse();
-  drawRoute();
+  if(!route){
+    alert('Snake isn\'t smart enough to figure this one out');
+  } else{
+    route.reverse();
+    drawRoute();
+  }
   setTimeout(function() {
     startMoving();
   }, 2000);
@@ -168,7 +177,7 @@ function DFS(node, queue){
     return false;
   }
   board[node.pos.x][node.pos.y].visited = true;
-  if(node.type === 'wall' || node.type === 'body' || node.type === 'tail'){
+  if(node.type === 'wall' || node.type === 'body' || node.type === 'tail' || node.type === 'border'){
     return false;
   } else if(node.type === 'food'){
     // console.log("FOOD");
@@ -209,35 +218,180 @@ function DFS(node, queue){
 
 function doDFS(){
   route = DFS(getHead());
+  if(!route){
+    alert('Snake isn\'t smart enough to figure this one out');
+  }
   drawRoute();
   setTimeout(function() {
     startMoving();
   }, 2000);
 }
-function drawVisited(){
-  drawRoute(visited.reverse());
-}
 
-function drawRoute () {
-  var len = route.length;
-  var offset = (gameType === 'DFS') ? -1 : 0;
-  for(var block in route){
-    if(block == len - 1 && gameType === 'DFS'){
-      return;
-    }
-    if(block == 0 && gameType === 'BFS'){
-      continue;
-    }
-    $('.' + route[block].pos.x +'-'+ route[block].pos.y).css('background-color', 'orange');
-    $('.' + route[block].pos.x +'-'+ route[block].pos.y).html(route.length - block + offset);
-  }
-}
-
+// HELPERS
 function clearBoard(){
   for (var x = 0; x < board.length; x++) {
     for (var y = 0; y < board.length; y++) {
       board[x][y].path = undefined;
       board[x][y].visited = false;
+      board[x][y].score = undefined;
+      board[x][y].hScore = undefined;
+      board[x][y].gScore = undefined;
     }
+  }
+}
+
+// A* Shyt
+function aStar (node) {
+  node.path = [];
+  node.gScore = 0;
+  node.score = 9999;
+  var passed = {};
+  var validNode = function(n) {
+    return n.type !== 'wall' && n.type !== 'body' &&
+           n.type !== 'tail' && n.type !== 'border' &&
+           n.type !== 'head';
+  };
+  var i = 0;
+  while(true){
+    i++;
+    gScore(node);
+    hScore(node);
+    
+    
+    if(node.type === 'food'){
+      console.log('path: ' + node.path.length + 'i: ' + i);
+      return node.path;
+    }
+
+
+    // UP
+    if(validNode(board[node.pos.x][node.pos.y - 1])){
+      board[node.pos.x][node.pos.y - 1].score = board[node.pos.x][node.pos.y - 1].hScore + board[node.pos.x][node.pos.y - 1].gScore;
+
+      board[node.pos.x][node.pos.y - 1].path = _.clone(node.path);
+      board[node.pos.x][node.pos.y - 1].path.push({
+        pos: node.pos,
+        dir: 'UP'
+      });
+      if(!passed[board[node.pos.x][node.pos.y - 1].score]){
+        passed[board[node.pos.x][node.pos.y - 1].score] = [];
+      }
+      passed[board[node.pos.x][node.pos.y - 1].score].push(board[node.pos.x][node.pos.y - 1]);
+    }
+    // DOWN
+    if(validNode(board[node.pos.x][node.pos.y + 1])){
+      board[node.pos.x][node.pos.y + 1].score = board[node.pos.x][node.pos.y + 1].hScore + board[node.pos.x][node.pos.y + 1].gScore;
+
+      board[node.pos.x][node.pos.y + 1].path = _.clone(node.path);
+      board[node.pos.x][node.pos.y + 1].path.push({
+        pos: node.pos,
+        dir: 'DOWN'
+      });
+      if(!passed[board[node.pos.x][node.pos.y + 1].score]){
+        passed[board[node.pos.x][node.pos.y + 1].score] = [];
+      }
+      passed[board[node.pos.x][node.pos.y + 1].score].push(board[node.pos.x][node.pos.y + 1]);
+    }
+    // RIGHT
+    if(validNode(board[node.pos.x + 1][node.pos.y])){
+      board[node.pos.x + 1][node.pos.y].score = board[node.pos.x + 1][node.pos.y].hScore + board[node.pos.x + 1][node.pos.y].gScore;
+      
+      board[node.pos.x + 1][node.pos.y].path = _.clone(node.path);
+      board[node.pos.x + 1][node.pos.y].path.push({
+        pos: node.pos,
+        dir: 'RIGHT'
+      });
+      if(!passed[board[node.pos.x + 1][node.pos.y].score]){
+        passed[board[node.pos.x + 1][node.pos.y].score] = [];
+      }
+      passed[board[node.pos.x + 1][node.pos.y].score].push(board[node.pos.x + 1][node.pos.y]);
+    }
+    // LEFT
+    if(validNode(board[node.pos.x - 1][node.pos.y])){
+      board[node.pos.x - 1][node.pos.y].score = board[node.pos.x - 1][node.pos.y].hScore + board[node.pos.x - 1][node.pos.y].gScore;
+      
+      board[node.pos.x - 1][node.pos.y].path = _.clone(node.path);
+      board[node.pos.x - 1][node.pos.y].path.push({
+        pos: node.pos,
+        dir: 'LEFT'
+      });
+      if(!passed[board[node.pos.x - 1][node.pos.y].score]){
+        passed[board[node.pos.x - 1][node.pos.y].score] = [];
+      }
+      passed[board[node.pos.x - 1][node.pos.y].score].push(board[node.pos.x - 1][node.pos.y]);
+    }
+    var best = _.min(_.keys(passed));
+    node = passed[best].shift();
+    if(passed[best].length === 0){
+      delete passed[best];
+    }
+  }
+}
+
+// Heuristics
+// h1 - isAbove?
+function gScore (node) {
+  // UP
+  board[node.pos.x][node.pos.y - 1].gScore = (node.gScore + 1);
+  // DOWN
+  board[node.pos.x][node.pos.y + 1].gScore = (node.gScore + 1);
+  // LEFT
+  board[node.pos.x - 1][node.pos.y].gScore = (node.gScore + 1);
+  // RIGHT
+  board[node.pos.x + 1][node.pos.y].gScore = (node.gScore + 1)
+}
+// h2 - isLeft?
+function hScore (node) {
+  var calculateDistance = function(n){
+    return (Math.abs(n.pos.x - food.x) + Math.abs(n.pos.y - food.y)) * 1.5;
+  }
+  // UP
+  if(!board[node.pos.x][node.pos.y - 1].hScore){
+    board[node.pos.x][node.pos.y - 1].hScore = calculateDistance(board[node.pos.x][node.pos.y - 1]);
+  }
+  // DOWN
+  if(!board[node.pos.x][node.pos.y + 1].hScore){
+    board[node.pos.x][node.pos.y + 1].hScore = calculateDistance(board[node.pos.x][node.pos.y + 1]);
+  }
+  // LEFT
+  if(!board[node.pos.x - 1][node.pos.y].hScore){
+    board[node.pos.x - 1][node.pos.y].hScore = calculateDistance(board[node.pos.x - 1][node.pos.y]);
+  }
+  // RIGHT
+  if(!board[node.pos.x + 1][node.pos.y].hScore){
+    board[node.pos.x + 1][node.pos.y].hScore = calculateDistance(board[node.pos.x + 1][node.pos.y]);
+  }
+}
+
+function doAStar () {
+  route = aStar(getHead()).reverse();
+  if(!route){
+    alert('Snake isn\'t smart enough to figure this one out');
+  }
+  drawRoute();
+  setTimeout(function() {
+    startMoving();
+  }, 2000);
+}
+
+function drawVisited(){
+  drawRoute(visited.reverse());
+}
+
+function drawRoute () {
+  if(!route){
+    return;
+  }
+  var len = route.length;
+  var offset = (gameType === 'DFS' || gameType === 'aStar') ? -1 : 0;
+  for(var block in route){
+    if(block == len + offset){
+      return;
+    }
+    if(block === '0' && gameType === 'BFS'){
+      continue;
+    }
+    $('.' + route[block].pos.x +'-'+ route[block].pos.y).css('background-color', 'orange');
+    $('.' + route[block].pos.x +'-'+ route[block].pos.y).html(route.length - block + offset);
   }
 }
