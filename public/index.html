@@ -9,44 +9,77 @@
   <script src="/js/lib/jquery.min.js"></script>
 </head>
 
-<body></body>
-<div style="width:100%;text-align:center;" class="center">
-  <h1>Hello</h1>
-  <p class="lead">Welcome to Snake Search</p>
-  <p>
-    <em>By Martin Gingras</em>
-  </p>
-  <br>
-  <div style="width:200px;left:50%;margin-left:-100px;text-align:left;position:relative;" class="playType">
-    <div class="radio">
-      <label>
-        <input type="radio" name="algorithmRadios" id="interactive" value="interactive" checked>&nbsp;Interactive</label>
+<body>
+  <div class="boardContainer" style="width:100%;height:100%;padding:0px;margin:0px;">
+    <div style="width:100%;text-align:center;" class="center">
+      <h1>Hello</h1>
+      <p class="lead">Welcome to Snake Search</p>
+      <p>
+        <em>By Martin Gingras</em>
+      </p>
       <br>
+      <div style="width:400px;left:50%;margin-left:-100px;text-align:left;position:relative;" class="playType">
+        <div class="radio">
+          <label>
+            <input type="radio" name="algorithmRadios" id="interactive" value="interactive" checked>&nbsp;Interactive</label>
+          <br>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="algorithmRadios" id="BFS" value="BFS">&nbsp;Breadth First Search</label>
+          <br>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="algorithmRadios" id="DFS" value="DFS">&nbsp;Depth First Search</label>
+          <br>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="algorithmRadios" id="aStar" value="aStar">&nbsp;A* Search (Combined)
+          </label>
+          <ul>
+            <li>
+              <label>
+                <input type="radio" name="algorithmRadios" id="aStarH1" value="aStarH1">&nbsp;A* Search h1 (Manhatten Distance)
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="radio" name="algorithmRadios" id="aStarH2" value="aStarH2">&nbsp;A* Search h2 (Home Distance)
+              </label>
+            </li>
+          </ul>
+        </div>
+        <br>
+      </div>
+      <p>
+        <em>Press the spacebar to start</em>
+      </p>
     </div>
-    <div class="radio">
-      <label>
-        <input type="radio" name="algorithmRadios" id="BFS" value="BFS">&nbsp;Breadth First Search</label>
-      <br>
-    </div>
-    <div class="radio">
-      <label>
-        <input type="radio" name="algorithmRadios" id="DFS" value="DFS">&nbsp;Depth First Search</label>
-      <br>
-    </div>
-    <div class="radio">
-      <label>
-        <input type="radio" name="algorithmRadios" id="aStar" value="aStar">&nbsp;A* Search</label>
-    </div>
-    <br>
   </div>
-  <p>
-    <em>Press the spacebar to start</em>
-  </p>
-</div>
+</body>
+<div id="gameOverModal" class="modal" style="display:none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Game Over</h4>
+      </div>
+      <div class="modal-body">
+        <h5>Snake wasn't smart enough to figure this one out!</h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 </html>
 <script src="/js/lib/jade.js"></script>
 <script src="/js/lib/lodash.min.js"></script>
+<script src="/js/lib/bootstrap.min.js"></script>
 <script src="/js/snake-game.js"></script>
 <script src="/js/snake.js"></script>
 <script src="/js/board.js"></script>

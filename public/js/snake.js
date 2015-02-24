@@ -57,8 +57,8 @@ Snake.prototype.move = function(direction) {
     }
   }
   for (var i = this.body.length - 1; i > 0; i--) {
-    this.body[i].pos.x = this.body[i - 1].pos.x
-    this.body[i].pos.y = this.body[i - 1].pos.y
+    this.body[i].pos.x = this.body[i - 1].pos.x;
+    this.body[i].pos.y = this.body[i - 1].pos.y;
   }
   if(direction === 'UP'){
     this.body[0].pos.y -= 1;

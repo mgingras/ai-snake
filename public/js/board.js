@@ -5,7 +5,7 @@ function Board() {
   this._placeBoard();
   this.snake = new Snake(this);
   this._placeSnake();
-  this._placeWalls(10);
+  this._placeWalls(20);
   this._placeFood();
   
 }
