@@ -8,11 +8,11 @@ var head;         // Head of the snake
 var food;         // Where the food is
   
 $(function() {
-  var modal = $('#gameOverModal');
-  modal.modal('hide');
-  modal.on('hide.bs.modal', function() {
-    newGame();
-  });
+  // var modal = $('#gameOverModal');
+  // modal.modal('hide');
+  // modal.on('hide.bs.modal', function() {
+  //   newGame();
+  // });
   
   
   $(document).on('keydown', function(e) {
@@ -87,6 +87,9 @@ function registerHandlers() {
 }
 
 function startMoving() {
+  if(moving){
+    return;
+  }
   moving = setInterval(function() {
     // console.log('Move: ' + direction);
     if(gameType !== 'interactive'){
@@ -95,6 +98,7 @@ function startMoving() {
       }
       else {
         clearInterval(moving);
+        moving = undefined;
         clearBoard();
         if(gameType === 'DFS'){
           return doDFS();
@@ -111,15 +115,14 @@ function startMoving() {
     }
     var updatedBoard = moveSnake(direction);
     if(updatedBoard === 'gameOver'){
-      newGame();
-      $('#gameOverModal').modal();
-      alert('Game Over');
+      // $('#gameOverModal').modal('show');
+      alert('game over');
     }
     head = updatedBoard.head;
     food = updatedBoard.food;
     board = updatedBoard.board;
     $('.boardContainer').html(updatedBoard.html);
-  }, 25);
+  }, 100);
 }
 
 function getHead(){
@@ -145,7 +148,7 @@ function BFS (node) {
     // If it is a searchable node
     // if(node.type !== 'wall' && node.type !== 'body' &&
       //  node.type !== 'tail' && node.type !== 'border' && !board[node.pos.x][node.pos.y].visited){
-      if(!board[node.pos.x][node.pos.y].visited && node.type !== 'border' && node.type !== 'wall'){
+      if(!board[node.pos.x][node.pos.y].visited && node.type !== 'border' && node.type !== 'wall' && node.type !== 'body' && node.type !== 'tail'){
        i++;
       // console.log('%s x: %d y: %d %s', node.type, node.pos.x, node.pos.y, node.visited);
       if(node.path){
@@ -177,6 +180,7 @@ function BFS (node) {
       if(!board[node.pos.x + 1][node.pos.y].visited){
         queue.push(_.merge(board[node.pos.x + 1][node.pos.y], {path: _.clone(node.path), dir: 'RIGHT'}));
       }
+      // $('.'+node.pos.x+'-'+node.pos.y).css('background-color', 'pink');
     }
     board[node.pos.x][node.pos.y].visited = true; // Visited this node
     if(queue.length > 0){
@@ -192,14 +196,15 @@ function doBFS () {
   route = BFS(getHead());
   if(!route){
     alert('Snake isn\'t smart enough to figure this one out');
+    newGame();
   } else{
     _(route).reverse().value();
-    // drawRoute();
+    drawRoute();
   }
-  startMoving();
-  // setTimeout(function() {
-  //   startMoving();
-  // }, 2000);
+  // startMoving();
+  setTimeout(function() {
+    startMoving();
+  }, 2000);
 }
 
 // DFS CODE
@@ -256,13 +261,14 @@ function doDFS(){
   route = DFS(getHead());
   if(!route){
     alert('Snake isn\'t smart enough to figure this one out');
+    newGame();
   } else{
-    // drawRoute();
+    drawRoute();
   }
-  startMoving();
-  // setTimeout(function() {
-  //   startMoving();
-  // }, 2000);
+  // startMoving();
+  setTimeout(function() {
+    startMoving();
+  }, 2000);
 }
 
 // HELPERS
@@ -300,7 +306,7 @@ function aStar (node) {
     
     
     if(node.type === 'food'){
-      console.log('path: ' + node.path.length + 'i: ' + i);
+      console.log('path: ' + node.path.length + ' i: ' + i);
       return node.path;
     }
 
@@ -378,7 +384,7 @@ function aStar (node) {
       passed[board[node.pos.x - 1][node.pos.y].score].push(_.clone(board[node.pos.x - 1][node.pos.y]));
     }
     var best = _.keys(passed).sort(sortAsNumbers)[0]; // For decimal weights
-    $('.'+node.pos.x+'-'+node.pos.y).css('background-color', 'pink');
+    // $('.'+node.pos.x+'-'+node.pos.y).css('background-color', 'pink');
     if(best){
       node = passed[best].pop();
     } else {
@@ -423,6 +429,8 @@ function doAStar () {
   route = aStar(getHead());
   if(!route){
     alert('Snake isn\'t smart enough to figure this one out');
+    newGame();
+    
   } else {
     route = _(route).reverse().value();
     drawRoute();
