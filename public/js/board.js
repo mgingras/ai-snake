@@ -1,13 +1,13 @@
 function Board() {
   this.height = 20;
   this.width = this.height;
-  
+
   this._placeBoard();
   this.snake = new Snake(this);
   this._placeSnake();
-  this._placeWalls(100);
+  this._placeWalls(25);
   this._placeFood();
-  
+
 }
 
 Board.prototype.update = function() {
@@ -136,7 +136,7 @@ Board.prototype._detectCollision = function() {
       }
     }
   }
-  
+
   if(collision){
     this.gameOver = true;
     return true;

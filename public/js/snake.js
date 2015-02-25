@@ -1,6 +1,6 @@
 function Snake(board) {
   this.board = board;
-  var length = 5;
+  var length = Math.ceil(Math.random() * (7 - 3) + 3)
   var headX = Math.floor(Math.random() * (board.width - 2 - length)) + 1;
   var headY = Math.floor(Math.random() * (board.height - 2)) + 1;
   var body = [];

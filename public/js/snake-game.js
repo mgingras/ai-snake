@@ -6,15 +6,8 @@ var direction = 'NONE',
 var route;        // Route for snake to take
 var head;         // Head of the snake
 var food;         // Where the food is
-  
+
 $(function() {
-  // var modal = $('#gameOverModal');
-  // modal.modal('hide');
-  // modal.on('hide.bs.modal', function() {
-  //   newGame();
-  // });
-  
-  
   $(document).on('keydown', function(e) {
     if(e.keyCode  === 32){
       gameType = $("input[type='radio'][name='algorithmRadios']:checked").val();
@@ -117,12 +110,13 @@ function startMoving() {
     if(updatedBoard === 'gameOver'){
       // $('#gameOverModal').modal('show');
       alert('game over');
+      newGame();
     }
     head = updatedBoard.head;
     food = updatedBoard.food;
     board = updatedBoard.board;
     $('.boardContainer').html(updatedBoard.html);
-  }, 100);
+  }, 75);
 }
 
 function getHead(){
@@ -156,18 +150,12 @@ function BFS (node) {
       } else{
         node.path = [];
       }
-      
+
       if(node.type === 'food'){
         console.log('path: ' + node.path.length + ' i: ' + i);
         return node.path;
       }
-      
-      // queue = queue.concat([
-      //   _.merge(board[node.pos.x][node.pos.y - 1], {path: _.clone(node.path), dir: 'UP'}),
-      //   _.merge(board[node.pos.x][node.pos.y + 1], {path: _.clone(node.path), dir: 'DOWN'}),
-      //   _.merge(board[node.pos.x - 1][node.pos.y], {path: _.clone(node.path), dir: 'LEFT'}),
-      //   _.merge(board[node.pos.x + 1][node.pos.y], {path: _.clone(node.path), dir: 'RIGHT'})
-      // ]);
+
       if(!board[node.pos.x][node.pos.y - 1].visited){
         queue.push(_.merge(board[node.pos.x][node.pos.y - 1], {path: _.clone(node.path), dir: 'UP'}));
       }
@@ -303,8 +291,8 @@ function aStar (node) {
     i++;
     gScore(node);
     hScore(node);
-    
-    
+
+
     if(node.type === 'food'){
       console.log('path: ' + node.path.length + ' i: ' + i);
       return node.path;
@@ -372,7 +360,7 @@ function aStar (node) {
       } else{
         board[node.pos.x - 1][node.pos.y].score = (gameType === 'aStarH1') ? board[node.pos.x - 1][node.pos.y].hScore : board[node.pos.x - 1][node.pos.y].gScore;
       }
-      
+
       board[node.pos.x - 1][node.pos.y].path = _.clone(node.path);
       board[node.pos.x - 1][node.pos.y].path.push({
         pos: node.pos,
@@ -430,7 +418,7 @@ function doAStar () {
   if(!route){
     alert('Snake isn\'t smart enough to figure this one out');
     newGame();
-    
+
   } else {
     route = _(route).reverse().value();
     drawRoute();
@@ -450,7 +438,7 @@ function drawRoute () {
     return;
   }
   var len = route.length;
-  var offset = (gameType === 'DFS' || gameType === 'aStar') ? -1 : 0;
+  var offset = (gameType === 'DFS' || gameType === 'aStar' || gameType === 'aStarH1' || gameType === 'aStarH2') ? -1 : 0;
   for(var block in route){
     if(block == len + offset){
       return;
