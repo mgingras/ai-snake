@@ -154,6 +154,15 @@ Board.prototype._detectFood = function() {
   // console.log('f: x: %d y: %d', this.food.x, this.food.y);
   if(headX === this.food.x && headY === this.food.y){
     this.food = undefined;
+    this.snake.length += 1;
+    this.snake.body[this.snake.body.length - 1 ].type = 'body';
+    this.snake.body.push({
+        type: 'tail',
+        pos : {
+          x: this.snake.body[this.snake.body.length - 1 ].pos.x,
+          y: this.snake.body[this.snake.body.length - 1 ].pos.y
+        }
+      });
     return true;
   }
   return false;
