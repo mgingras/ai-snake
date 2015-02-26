@@ -33,10 +33,6 @@ function newGame() {
     doBFS();
   } else if(gameType === 'aStar'){
     doAStar();
-  }else if(gameType === 'aStarH1'){
-    doAStar();
-  }else if(gameType === 'aStarH2'){
-    doAStar();
   }
 }
 
@@ -45,28 +41,24 @@ function registerHandlers() {
     if(gameType === 'interactive'){
       if(e.keyCode === 37){
         // LEFT
-        console.log('LEFT');
         direction = 'LEFT';
         if(!moving){
           startMoving();
         }
       } else if(e.keyCode === 39){
         // RIGHT
-        console.log('RIGHT');
         direction = 'RIGHT';
         if(!moving){
           startMoving();
         }
       } else if(e.keyCode === 38){
         // UP
-        console.log('UP');
         direction = 'UP';
         if(!moving){
           startMoving();
         }
       } else if(e.keyCode === 40){
         // DOWN
-        console.log('DOWN');
         direction = 'DOWN';
         if(!moving){
           startMoving();
@@ -84,7 +76,6 @@ function startMoving() {
     return;
   }
   moving = setInterval(function() {
-    // console.log('Move: ' + direction);
     if(gameType !== 'interactive'){
       if(route && route.length > 0){
         direction = route.pop().dir;
@@ -98,10 +89,6 @@ function startMoving() {
         } else if(gameType === 'BFS'){
           return doBFS();
         } else if(gameType === 'aStar'){
-          return doAStar();
-        }else if(gameType === 'aStarH1'){
-          return doAStar();
-        }else if(gameType === 'aStarH2'){
           return doAStar();
         }
       }
@@ -126,7 +113,6 @@ function getHead(){
   for (var x = 0; x < board.length; x++) {
     for (var y = 0; y < board.length; y++) {
       if(board[x][y].type === 'head'){
-        // console.log('x: ' + x + ' y: ' + y);
         return board[x][y];
       }
     }
@@ -137,14 +123,8 @@ function getHead(){
 function BFS (node) {
   var queue = [];
   var found = false;
-  var i = 0;
   while(!found){
-    // If it is a searchable node
-    // if(node.type !== 'wall' && node.type !== 'body' &&
-      //  node.type !== 'tail' && node.type !== 'border' && !board[node.pos.x][node.pos.y].visited){
-      if(!board[node.pos.x][node.pos.y].visited && node.type !== 'border' && node.type !== 'wall' && node.type !== 'body' && node.type !== 'tail'){
-       i++;
-      // console.log('%s x: %d y: %d %s', node.type, node.pos.x, node.pos.y, node.visited);
+    if(!board[node.pos.x][node.pos.y].visited && node.type !== 'border' && node.type !== 'wall' && node.type !== 'body' && node.type !== 'tail'){
       if(node.path){
         node.path.push(node);
       } else{
@@ -152,7 +132,6 @@ function BFS (node) {
       }
 
       if(node.type === 'food'){
-        console.log('path: ' + node.path.length + ' i: ' + i);
         return node.path;
       }
 
@@ -168,13 +147,10 @@ function BFS (node) {
       if(!board[node.pos.x + 1][node.pos.y].visited){
         queue.push(_.merge(board[node.pos.x + 1][node.pos.y], {path: _.clone(node.path), dir: 'RIGHT'}));
       }
-      // $('.'+node.pos.x+'-'+node.pos.y).css('background-color', 'pink');
     }
     board[node.pos.x][node.pos.y].visited = true; // Visited this node
     if(queue.length > 0){
-      // $('.'+node.pos.x+'-'+node.pos.y).css('background-color', 'pink');
       node = queue.shift();
-      // $('.'+node.pos.x+'-'+node.pos.y).css('background-color', 'purple');
     } else{
       return false;
     }
@@ -199,10 +175,8 @@ function doBFS () {
 var iDFS;
 function DFS(node, queue){
   if(!queue){
-    iDFS = 0;
     queue = [];
   }
-  iDFS++;
   if(node.visited){
     return false;
   }
@@ -210,10 +184,8 @@ function DFS(node, queue){
   if(node.type === 'wall' || node.type === 'body' || node.type === 'tail' || node.type === 'border'){
     return false;
   } else if(node.type === 'food'){
-    console.log('i: ' + iDFS);
     return true;
   }
-  // console.log('x: %d y: %d', node.pos.x, node.pos.y);
   if(DFS(board[node.pos.x][node.pos.y - 1], queue)){
     // UP
       queue.push({
@@ -253,7 +225,6 @@ function doDFS(){
   } else{
     drawRoute();
   }
-  // startMoving();
   setTimeout(function() {
     startMoving();
   }, 2000);
@@ -285,16 +256,13 @@ function aStar (node) {
   };
   var sortAsNumbers = function(a,b){return Number(a) - Number(b);};
 
-  var i = 0;
   var past = [];
   while(true){
-    i++;
     gScore(node);
     hScore(node);
 
 
     if(node.type === 'food'){
-      console.log('path: ' + node.path.length + ' i: ' + i);
       return node.path;
     }
 
@@ -303,8 +271,6 @@ function aStar (node) {
     if(validNode(board[node.pos.x][node.pos.y - 1])){
       if(gameType === 'aStar'){
         board[node.pos.x][node.pos.y - 1].score = board[node.pos.x][node.pos.y - 1].hScore + board[node.pos.x][node.pos.y - 1].gScore;
-      } else{
-        board[node.pos.x][node.pos.y - 1].score = (gameType === 'aStarH1') ? board[node.pos.x][node.pos.y - 1].hScore : board[node.pos.x][node.pos.y - 1].gScore;
       }
 
       board[node.pos.x][node.pos.y - 1].path = _.clone(node.path);
@@ -321,8 +287,6 @@ function aStar (node) {
     if(validNode(board[node.pos.x][node.pos.y + 1])){
       if(gameType === 'aStar'){
         board[node.pos.x][node.pos.y + 1].score = board[node.pos.x][node.pos.y + 1].hScore + board[node.pos.x][node.pos.y + 1].gScore;
-      } else{
-        board[node.pos.x][node.pos.y + 1].score = (gameType === 'aStarH1') ? board[node.pos.x][node.pos.y + 1].hScore : board[node.pos.x][node.pos.y + 1].gScore;
       }
 
       board[node.pos.x][node.pos.y + 1].path = _.clone(node.path);
@@ -339,8 +303,6 @@ function aStar (node) {
     if(validNode(board[node.pos.x + 1][node.pos.y])){
       if(gameType === 'aStar'){
         board[node.pos.x + 1][node.pos.y].score = board[node.pos.x + 1][node.pos.y].hScore + board[node.pos.x + 1][node.pos.y].gScore;
-      } else{
-        board[node.pos.x + 1][node.pos.y].score = (gameType === 'aStarH1') ? board[node.pos.x + 1][node.pos.y].hScore : board[node.pos.x + 1][node.pos.y].gScore;
       }
 
       board[node.pos.x + 1][node.pos.y].path = _.clone(node.path);
@@ -357,10 +319,7 @@ function aStar (node) {
     if(validNode(board[node.pos.x - 1][node.pos.y])){
       if(gameType === 'aStar'){
         board[node.pos.x - 1][node.pos.y].score = board[node.pos.x - 1][node.pos.y].hScore + board[node.pos.x - 1][node.pos.y].gScore;
-      } else{
-        board[node.pos.x - 1][node.pos.y].score = (gameType === 'aStarH1') ? board[node.pos.x - 1][node.pos.y].hScore : board[node.pos.x - 1][node.pos.y].gScore;
       }
-
       board[node.pos.x - 1][node.pos.y].path = _.clone(node.path);
       board[node.pos.x - 1][node.pos.y].path.push({
         pos: node.pos,
@@ -438,7 +397,7 @@ function drawRoute () {
     return;
   }
   var len = route.length;
-  var offset = (gameType === 'DFS' || gameType === 'aStar' || gameType === 'aStarH1' || gameType === 'aStarH2') ? -1 : 0;
+  var offset = (gameType === 'DFS' || gameType === 'aStar') ? -1 : 0;
   for(var block in route){
     if(block == len + offset){
       return;

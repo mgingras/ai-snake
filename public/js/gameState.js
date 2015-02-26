@@ -1,9 +1,7 @@
 var snakeBoard;
 function newSnakeGame () {
-  // console.log('before board');
   snakeBoard = new Board(); // Create a new board
-  // console.log('after board');
-  
+
   var htmlBoard = renderBoard({board: snakeBoard.board});
   return {
     board: snakeBoard.board,

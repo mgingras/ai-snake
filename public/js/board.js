@@ -113,8 +113,6 @@ Board.prototype._detectCollision = function() {
   var headX = this.snake.head().pos.x;
   var headY = this.snake.head().pos.y;
   var collision = false;
-  // console.log(headX);
-  // console.log(headY);
 
   // Hits wall
   if(headX <= 0 || headX >= this.width - 1 || headY <= 0 || headY >= this.height - 1) {
@@ -150,8 +148,6 @@ Board.prototype._detectFood = function() {
   }
   var headX = this.snake.head().pos.x;
   var headY = this.snake.head().pos.y;
-  // console.log('s: x: %d y: %d', headX, headY);
-  // console.log('f: x: %d y: %d', this.food.x, this.food.y);
   if(headX === this.food.x && headY === this.food.y){
     this.food = undefined;
     this.snake.length += 1;
